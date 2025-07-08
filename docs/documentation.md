@@ -3,7 +3,7 @@ id: quick-start
 title: Quick Start Guide
 category: Getting Started
 tags: [quick-start, getting-started, first-rules]
-seeAlso: [route-filter-midi, transform-notes-controllers, time-based-effects, automatic-control, interactive-setups, testing-basics, device-connection]
+seeAlso: [route-filter-midi, transform-notes-controllers, time-based-effects, automatic-control, interactive-setups, testing-basics, device-connection, logging-tab, firmware-tab]
 ---
 
 # Quick Start Guide
@@ -142,9 +142,22 @@ noteOff(ch, note, vel) & harmony == 0 -> noteOff(ch, note, vel);
 3. **Click "Run Test"**
 4. **See what happens**
 
+## Watch Your Rules in Action
+1. **Go to Logging tab** and start logging
+2. **Play your MIDI controller**
+3. **Watch green arrows (↓)** for MIDI coming in
+4. **Watch red arrows (↑)** for what your rules output
+5. **Perfect for learning** how your rules actually work
+
 ## Deploy to Device
 1. **Rules tab** → "Try on Device" (temporary)
 2. **Or "Save to Device"** (permanent)
+
+## Keep Your Device Updated
+**Firmware tab** shows your current version and available updates:
+• **Update when available** for new features and bug fixes
+• **Takes 2-5 minutes** - just click Update and wait
+• **Improves performance** and adds new capabilities
 
 ## Next Steps
 Once you've tried these basic examples:
@@ -172,7 +185,7 @@ id: route-filter-midi
 title: Route and Filter MIDI
 category: Examples
 tags: [routing, filtering, channels, keyboard-split]
-seeAlso: [basic-tasks, transform-notes-controllers, language-reference, testing-basics]
+seeAlso: [basic-tasks, transform-notes-controllers, language-reference, testing-basics, logging-tab]
 ---
 
 # Route and Filter MIDI
@@ -250,12 +263,18 @@ noteOff(ch, note, vel) & note > 108 ->;
 // Could prevent accidental triggering of extreme piano notes
 // Could limit guitar MIDI pickup to playable range
 
+## Verify Your Rules Work
+Use **[[logging-tab|Real-time Logging]]** to watch your rules in action:
+• Green arrows show original MIDI input
+• Red arrows show your transformed output
+• Perfect for understanding exactly what your rules do
+
 ---
 id: transform-notes-controllers
 title: Transform Notes and Controllers
 category: Examples
 tags: [transform, transpose, velocity, controllers, chord-generation]
-seeAlso: [route-filter-midi, time-based-effects, language-reference, testing-basics]
+seeAlso: [route-filter-midi, time-based-effects, language-reference, testing-basics, logging-tab]
 ---
 
 # Transform Notes and Controllers
@@ -334,12 +353,18 @@ controlChange(ch, 1, val) ->
 // Could use single knob to control multiple effect parameters simultaneously
 // Could map breath controller to affect volume, filter, and vibrato together
 
+## Verify Your Rules Work
+Use **[[logging-tab|Real-time Logging]]** to watch your rules in action:
+• Green arrows show original MIDI input
+• Red arrows show your transformed output
+• Perfect for understanding exactly what your rules do
+
 ---
 id: time-based-effects
 title: Add Time-Based Effects
 category: Examples
 tags: [time-based, echo, delay, arpeggiator, timing]
-seeAlso: [transform-notes-controllers, automatic-control, language-reference, testing-basics]
+seeAlso: [transform-notes-controllers, automatic-control, language-reference, testing-basics, logging-tab]
 ---
 
 # Add Time-Based Effects
@@ -412,6 +437,12 @@ noteOff(ch, note, vel) -> allNotesOff(arp_channel);
 ```
 // Could turn held chords into automatic arpeggiated patterns
 // Could create guitar fingerpicking patterns from simple chord input
+
+## Verify Your Rules Work
+Use **[[logging-tab|Real-time Logging]]** to watch your rules in action:
+• Green arrows show original MIDI input
+• Red arrows show your transformed output
+• Perfect for understanding exactly what your rules do
 
 ---
 id: testing-basics
@@ -489,6 +520,18 @@ noteOn(1, 72, 100)         // Piano note with sustain
 ```
 
 **Comments appear in test results** for easy understanding of what each part tests.
+
+## Real-Time Testing with Logging
+1. **Logging tab** → Turn on logging
+2. **Play your MIDI controller**
+3. **Watch input messages** (green arrows)
+4. **Verify output messages** (red arrows)
+5. **Compare to expectations**
+
+This is especially helpful when:
+• Rules aren't working as expected
+• Learning what your controller actually sends
+• Understanding complex rule interactions
 
 ## Testing Different Scenarios
 
@@ -569,7 +612,7 @@ id: automatic-control
 title: Create Automatic Control
 category: Examples
 tags: [automatic, lfo, tremolo, auto-pan, beat-sync, program-changes]
-seeAlso: [time-based-effects, interactive-setups, language-reference, testing-basics]
+seeAlso: [time-based-effects, interactive-setups, language-reference, testing-basics, logging-tab]
 ---
 
 # Create Automatic Control
@@ -669,12 +712,18 @@ noteOff(ch, note, vel) -> noteOff(pan_channel, note, vel);
 // Could trigger left/right speaker switching
 // Could adjust balance controls on dual-amp setups
 
+## Verify Your Rules Work
+Use **[[logging-tab|Real-time Logging]]** to watch your rules in action:
+• Green arrows show original MIDI input
+• Red arrows show your transformed output
+• Perfect for understanding exactly what your rules do
+
 ---
 id: interactive-setups
 title: Build Interactive Setups
 category: Examples
 tags: [interactive, mode-switching, variable-split, dynamic-harmonizer, sustain-effects]
-seeAlso: [automatic-control, transform-notes-controllers, language-reference, testing-basics]
+seeAlso: [automatic-control, transform-notes-controllers, language-reference, testing-basics, logging-tab]
 ---
 
 # Build Interactive Setups
@@ -796,6 +845,12 @@ noteOff(ch, note, vel) & sustain == 0 ->
 // Could add shimmer effects only when sustain pedal is pressed
 // Could trigger ambient textures with sustain pedal
 // Could enable special guitar effects during sustained sections
+
+## Verify Your Rules Work
+Use **[[logging-tab|Real-time Logging]]** to watch your rules in action:
+• Green arrows show original MIDI input
+• Red arrows show your transformed output
+• Perfect for understanding exactly what your rules do
 
 ---
 id: language-reference
@@ -1649,6 +1704,19 @@ Practice/
 • **Keep device rules simple** and well-tested
 • **Document what's stored** on each device
 
+## Device Health and Updates
+
+### Firmware Management
+• **Firmware tab** → Check current version regularly  
+• **Update when available** → New features and bug fixes
+• **Before important use** → Ensure device is current
+• **After connection problems** → Updates may resolve issues
+
+### Regular Maintenance
+• **Check for updates** monthly or before important sessions
+• **Update device firmware** to maintain compatibility
+• **Keep device software current** for best performance
+
 ## Quick Deployment
 
 ### Direct Deployment from Device Tab
@@ -1931,6 +1999,20 @@ seeAlso: [device-connection, testing-basics, route-filter-midi, language-referen
 ---
 
 # Troubleshooting
+
+## First Steps for Any Problem
+
+### Check Real-Time MIDI Flow
+• **Logging tab** → Start logging
+• **Play your controller** → See if input messages appear
+• **No input?** Check MIDI connections
+• **Wrong input?** Controller might be sending different data than expected
+• **No output?** Rules might be filtering or have syntax errors
+
+### Update Device Firmware
+• **Firmware tab** → Check for updates
+• **Updates may fix** connection and processing issues
+• **Update if available** → Usually resolves many problems
 
 ## Rule Problems
 
@@ -2252,17 +2334,17 @@ seeAlso: [quick-start, device-connection, route-filter-midi, testing-basics, fir
 **When to use:** After writing rules, validate they work as expected before live use
 
 ### Firmware Tab
-**Purpose:** Update your device with new features
+**Purpose:** Keep your device current and healthy
 
 **Key functions:**
 • See what version your device has
 • Download and install updates
 • Keep your device current with bug fixes and improvements
 
-**When to use:** Check occasionally for updates, especially if having issues
+**When to use:** Initial setup, troubleshooting, monthly maintenance checks
 
 ### Logging Tab
-**Purpose:** Watch MIDI messages in real-time
+**Purpose:** Watch MIDI messages in real-time - your window into what's actually happening
 
 **Key functions:**
 • See what MIDI is going into your device (green arrows)
@@ -2270,7 +2352,7 @@ seeAlso: [quick-start, device-connection, route-filter-midi, testing-basics, fir
 • Filter messages to reduce clutter
 • Spot problems with your rules or setup
 
-**When to use:** Debug rules, troubleshoot problems, or learn how MIDI works
+**When to use:** Debug rules, learn MIDI, verify connections, troubleshoot any issues
 
 ### Help Tab
 **Purpose:** Access documentation and examples
