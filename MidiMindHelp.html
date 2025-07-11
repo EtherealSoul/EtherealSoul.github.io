@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --bg-color: #ffffff;
+            --surface-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #0f172a;
+            --text-secondary: #64748b;
+            --code-bg: #f1f5f9;
+            --error-color: #dc2626;
+            --success-color: #16a34a;
+            --keyword-color: #7c3aed;
+            --comment-color: #6b7280;
+            --number-color: #ea580c;
+            --string-color: #059669;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --border-color: #334155;
+            --text-color: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --code-bg: #1e293b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .wiki-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .wiki-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .nav-button:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .nav-button:disabled:hover {
+            background: transparent;
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+
+        .page-title {
+            flex: 1;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            min-width: 200px;
+        }
+
+        .search-toggle {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .search-toggle.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .search-section {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .search-section.active {
+            display: block;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .search-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .wiki-content {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .content-block {
+            margin-bottom: 16px;
+        }
+
+        .content-block h1 {
+            font-size: 32px;
+            color: var(--primary-color);
+            margin-bottom: 16px;
+            font-weight: bold;
+        }
+
+        .content-block h2 {
+            font-size: 28px;
+            color: var(--primary-color);
+            margin-bottom: 14px;
+            font-weight: bold;
+        }
+
+        .content-block h3 {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .content-block h4 {
+            font-size: 20px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .code-block {
+            position: relative;
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0.7;
+            transition: all 0.2s ease;
+        }
+
+        .copy-button:hover {
+            opacity: 1;
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .bullet-list {
+            padding-left: 20px;
+        }
+
+        .bullet-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .bullet-marker {
+            color: var(--primary-color);
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        .wiki-link {
+            color: var(--primary-color);
+            text-decoration: underline;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .wiki-link:hover {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .search-result {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .search-result:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-result-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .search-result-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .search-result-preview {
+            font-size: 14px;
+            color: var(--text-color);
+            line-height: 1.4;
+        }
+
+        .tags-section, .see-also-section {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+
+        .tag-chip, .see-also-chip {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            margin: 2px 4px 2px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tag-chip:hover, .see-also-chip:hover {
+            opacity: 0.8;
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .error {
+            background: var(--error-color);
+            color: white;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 100;
+        }
+
+        .settings-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 101;
+        }
+
+        .theme-toggle {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .font-size-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .font-size-button {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Syntax highlighting */
+        .keyword { color: var(--keyword-color); font-weight: bold; }
+        .comment { color: var(--comment-color); font-style: italic; }
+        .number { color: var(--number-color); }
+        .string { color: var(--string-color); }
+        .midi-channel { color: #9333ea; font-weight: bold; }
+        .midi-system { color: #dc2626; font-weight: bold; }
+        .boolean-op { color: #ea580c; font-weight: bold; }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .wiki-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .page-title {
+                font-size: 20px;
+                text-align: center;
+            }
+
+            .nav-controls {
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="settings-toggle" onclick="toggleSettings()">⚙️</button>
+
+    <div class="settings-panel" id="settingsPanel">
+        <button class="theme-toggle" onclick="toggleTheme()">🌙 Toggle Dark Mode</button>
+        <div class="font-size-control">
+            <span>Font Size:</span>
+            <button class="font-size-button" onclick="changeFontSize(-1)">-</button>
+            <span id="fontSizeDisplay">16px</span>
+            <button class="font-size-button" onclick="changeFontSize(1)">+</button>
+        </div>
+        <button class="theme-toggle" onclick="refreshDocs()">🔄 Refresh Docs</button>
+    </div>
+
+    <div class="container">
+        <div class="wiki-card">
+            <div class="wiki-header">
+                <div class="nav-controls">
+                    <button class="nav-button" id="backButton" onclick="navigateBack()" disabled>
+                        ← Back
+                    </button>
+                    <button class="nav-button" onclick="navigateHome()">
+                        🏠 Home
+                    </button>
+                    <span id="resultCount" style="color: var(--primary-color); font-size: 14px;"></span>
+                </div>
+                <div class="page-title" id="pageTitle">Loading...</div>
+                <button class="search-toggle" id="searchToggle" onclick="toggleSearch()">
+                    🔍 Search
+                </button>
+            </div>
+
+            <div class="search-section" id="searchSection">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search documentation..."
+                       oninput="handleSearch()" onkeydown="handleSearchKeydown(event)">
+                <div class="search-info" id="searchInfo">Type at least 2 characters to search</div>
+            </div>
+
+            <div class="wiki-content" id="wikiContent">
+                <div class="loading">Loading documentation...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - path to documentation file in the same repository
+        const DOCS_PATH = 'docs/documentation.md'; // Update this to match your documentation file path
+
+        // Global state
+        let wikiPages = [];
+        let currentPageId = 'quick-start';
+        let navigationHistory = ['quick-start'];
+        let currentHistoryIndex = 0;
+        let searchQuery = '';
+        let showSearch = false;
+        let fontSize = 16;
+
+        // Data structures
+        class WikiPage {
+            constructor(id, title, category, content, tags = [], seeAlso = []) {
+                this.id = id;
+                this.title = title;
+                this.category = category;
+                this.content = content;
+                this.tags = tags;
+                this.seeAlso = seeAlso;
+            }
+        }
+
+        class ContentBlock {
+            constructor(type, content, level = 0) {
+                this.type = type; // 'header', 'paragraph', 'code', 'list'
+                this.content = content;
+                this.level = level;
+            }
+        }
+
+        // Initialize the application
+        async function initializeApp() {
+            try {
+                await loadDocumentation();
+                renderCurrentPage();
+                updateNavigationButtons();
+            } catch (error) {
+                showError('Failed to load documentation: ' + error.message);
+            }
+        }
+
+        // Load documentation from the same repository
+        async function loadDocumentation() {
+            try {
+                const response = await fetch(DOCS_PATH);
+                if (!response.ok) {
+                    throw new Error(`Failed to load documentation: HTTP ${response.status}`);
+                }
+
+                const content = await response.text();
+                wikiPages = parseDocumentation(content);
+                console.log('Loaded documentation:', wikiPages.length, 'pages');
+
+                if (wikiPages.length === 0) {
+                    throw new Error('No documentation pages could be parsed');
+                }
+            } catch (error) {
+                console.error('Error loading documentation:', error);
+                throw error;
+            }
+        }
+
+        // Parse documentation content into WikiPage objects
+        function parseDocumentation(content) {
+            console.log('Parsing documentation content:', content.length, 'characters');
+
+            const pages = [];
+            const sections = [];
+            const lines = content.split('\n');
+
+            let currentSection = [];
+            let inSection = false;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+
+                if (line === '---') {
+                    if (!inSection) {
+                        inSection = true;
+                        currentSection = [];
+                    } else {
+                        inSection = false;
+
+                        // Collect content until next --- or end of file
+                        const contentLines = [];
+                        i++; // Skip the closing ---
+
+                        while (i < lines.length && lines[i].trim() !== '---') {
+                            contentLines.push(lines[i]);
+                            i++;
+                        }
+
+                        // Add complete section
+                        const frontMatter = currentSection.join('\n');
+                        const sectionContent = contentLines.join('\n').trim();
+                        const completeSection = frontMatter + '\n---SPLIT---\n' + sectionContent;
+                        sections.push(completeSection);
+
+                        // Step back one line since loop will increment
+                        if (i < lines.length) i--;
+                        currentSection = [];
+                    }
+                } else if (inSection) {
+                    currentSection.push(line);
+                }
+            }
+
+            console.log('Found', sections.length, 'sections');
+
+            // Parse each section
+            for (let i = 0; i < sections.length; i++) {
+                try {
+                    const page = parseSection(sections[i]);
+                    if (page) {
+                        pages.push(page);
+                    }
+                } catch (error) {
+                    console.error('Error parsing section', i + 1, ':', error);
+                }
+            }
+
+            return pages;
+        }
+
+        // Parse a single section into a WikiPage
+        function parseSection(section) {
+            const parts = section.split('\n---SPLIT---\n');
+            if (parts.length !== 2) {
+                console.warn('Section does not have exactly 2 parts');
+                return null;
+            }
+
+            const frontMatterText = parts[0].trim();
+            const content = parts[1].trim();
+
+            // Parse front matter
+            const frontMatterLines = frontMatterText.split('\n');
+            const metadata = parseFrontMatter(frontMatterLines);
+
+            // Validate required fields
+            if (!metadata.id || !metadata.title || !metadata.category) {
+                console.warn('Missing required fields in front matter');
+                return null;
+            }
+
+            return new WikiPage(
+                metadata.id,
+                metadata.title,
+                metadata.category,
+                content,
+                parseList(metadata.tags),
+                parseList(metadata.seeAlso)
+            );
+        }
+
+        // Parse front matter
+        function parseFrontMatter(lines) {
+            const metadata = {};
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed || trimmed.startsWith('#')) continue;
+
+                const colonIndex = trimmed.indexOf(':');
+                if (colonIndex === -1) continue;
+
+                const key = trimmed.substring(0, colonIndex).trim();
+                const value = trimmed.substring(colonIndex + 1).trim();
+                metadata[key] = value;
+            }
+
+            return metadata;
+        }
+
+        // Parse list values
+        function parseList(value) {
+            if (!value) return [];
+
+            // Handle YAML list format: [item1, item2, item3]
+            if (value.startsWith('[') && value.endsWith(']')) {
+                const content = value.substring(1, value.length - 1);
+                return content.split(',').map(item => item.trim()).filter(item => item);
+            }
+
+            // Handle comma-separated format
+            return value.split(',').map(item => item.trim()).filter(item => item);
+        }
+
+        // Get current page
+        function getCurrentPage() {
+            return wikiPages.find(page => page.id === currentPageId) || wikiPages[0];
+        }
+
+        // Render the current page
+        function renderCurrentPage() {
+            const page = getCurrentPage();
+            if (!page) {
+                showError('Page not found');
+                return;
+            }
+
+            document.getElementById('pageTitle').textContent = page.title;
+
+            if (showSearch && searchQuery.length >= 2) {
+                renderSearchResults();
+            } else {
+                renderPageContent(page);
+            }
+        }
+
+        // Render page content
+        function renderPageContent(page) {
+            const contentElement = document.getElementById('wikiContent');
+            const contentBlocks = parseMarkdownContent(page.content);
+
+            let html = '';
+
+            // Render content blocks
+            for (const block of contentBlocks) {
+                html += renderContentBlock(block);
+            }
+
+            // Add See Also section
+            if (page.seeAlso.length > 0) {
+                html += renderSeeAlsoSection(page);
+            }
+
+            // Add Tags section
+            if (page.tags.length > 0) {
+                html += renderTagsSection(page);
+            }
+
+            contentElement.innerHTML = html;
+
+            // Add event listeners for wiki links
+            addWikiLinkListeners();
+            addCopyButtonListeners();
+        }
+
+        // Parse markdown content into blocks
+        function parseMarkdownContent(content) {
+            const blocks = [];
+            const lines = content.split('\n');
+            let i = 0;
+
+            while (i < lines.length) {
+                const line = lines[i];
+
+                if (line.startsWith('#')) {
+                    // Headers
+                    let level = 0;
+                    for (let j = 0; j < line.length && line[j] === '#'; j++) {
+                        level++;
+                    }
+                    const headerText = line.substring(level).trim();
+                    if (headerText) {
+                        blocks.push(new ContentBlock('header', headerText, level));
+                    }
+                    i++;
+                } else if (line.trim().startsWith('```')) {
+                    // Code blocks
+                    const codeLines = [];
+                    i++; // Skip opening ```
+
+                    while (i < lines.length && !lines[i].trim().startsWith('```')) {
+                        codeLines.push(lines[i]);
+                        i++;
+                    }
+
+                    if (i < lines.length) i++; // Skip closing ```
+                    blocks.push(new ContentBlock('code', codeLines.join('\n')));
+                } else if (line.trimLeft().startsWith('•') || line.trimLeft().startsWith('-')) {
+                    // Bullet lists
+                    const listItems = [];
+
+                    while (i < lines.length) {
+                        const currentLine = lines[i].trimLeft();
+                        if (currentLine.startsWith('•') || currentLine.startsWith('-')) {
+                            const item = currentLine.substring(1).trim();
+                            listItems.push(item);
+                            i++;
+                        } else if (currentLine === '') {
+                            i++;
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    blocks.push(new ContentBlock('list', listItems));
+                } else if (line === '') {
+                    // Empty lines
+                    i++;
+                } else {
+                    // Regular paragraphs
+                    const paragraphLines = [];
+
+                    while (i < lines.length) {
+                        const currentLine = lines[i];
+                        if (currentLine === '' ||
+                            currentLine.startsWith('#') ||
+                            currentLine.trim().startsWith('```') ||
+                            currentLine.trimLeft().startsWith('•') ||
+                            currentLine.trimLeft().startsWith('-')) {
+                            break;
+                        }
+                        paragraphLines.push(currentLine);
+                        i++;
+                    }
+
+                    if (paragraphLines.length > 0) {
+                        blocks.push(new ContentBlock('paragraph', paragraphLines.join('\n')));
+                    }
+                }
+            }
+
+            return blocks;
+        }
+
+        // Render a content block
+        function renderContentBlock(block) {
+            switch (block.type) {
+                case 'header':
+                    return `<div class="content-block"><h${block.level}>${escapeHtml(block.content)}</h${block.level}></div>`;
+
+                case 'code':
+                    const highlightedCode = highlightCode(block.content);
+                    return `<div class="content-block">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyToClipboard(this)">Copy</button>
+                            <div>${highlightedCode}</div>
+                        </div>
+                    </div>`;
+
+                case 'list':
+                    const listItems = block.content.map(item =>
+                        `<div class="bullet-item">
+                            <span class="bullet-marker">•</span>
+                            <div>${formatInlineText(item)}</div>
+                        </div>`
+                    ).join('');
+                    return `<div class="content-block"><div class="bullet-list">${listItems}</div></div>`;
+
+                case 'paragraph':
+                    return `<div class="content-block"><p>${formatInlineText(block.content)}</p></div>`;
+
+                default:
+                    return '';
+            }
+        }
+
+        // Format inline text with bold, code, and wiki links
+        function formatInlineText(text) {
+            // First handle wiki links
+            text = text.replace(/\[\[([^|\]]+)\|?([^\]]*)\]\]/g, (match, pageId, displayText) => {
+                const display = displayText || pageId;
+                return `<span class="wiki-link" onclick="navigateToPage('${pageId}')">${escapeHtml(display)}</span>`;
+            });
+
+            // Handle bold text
+            text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+            // Handle inline code
+            text = text.replace(/`([^`]+)`/g, '<code style="background: var(--code-bg); padding: 2px 4px; border-radius: 3px; font-family: monospace;">$1</code>');
+
+            return text;
+        }
+
+        // Syntax highlighting for code blocks
+        function highlightCode(code) {
+            let highlighted = escapeHtml(code);
+
+            // Comments (do first to avoid highlighting keywords inside comments)
+            highlighted = highlighted.replace(/(\/\/.*$)/gm, '<span class="comment">$1</span>');
+
+            // Global variable declarations
+            highlighted = highlighted.replace(/\b(global)\b/g, '<span class="keyword">$1</span>');
+
+            // MIDI Channel Voice Messages
+            highlighted = highlighted.replace(/\b(noteOn|noteOff|controlChange|programChange|pitchBend|aftertouch|polyAftertouch)\b/g, '<span class="midi-channel">$1</span>');
+
+            // MIDI System Messages and Functions
+            highlighted = highlighted.replace(/\b(delay|start|stop|continue|timingClock|activeSensing|systemReset|tuneRequest|sysEx|endOfSysEx)\b/g, '<span class="midi-system">$1</span>');
+
+            // Numbers
+            highlighted = highlighted.replace(/\b\d+\b/g, '<span class="number">$1</span>');
+
+            // Boolean and comparison operators
+            highlighted = highlighted.replace(/(&amp;|\||==|!=|&lt;=|&gt;=|&lt;|&gt;|=)/g, '<span class="boolean-op">$1</span>');
+
+            // Arithmetic operators
+            highlighted = highlighted.replace(/(\+|-|\*|\/)/g, '<span class="boolean-op">$1</span>');
+
+            return highlighted;
+        }
+
+        // Search functionality
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value;
+            updateSearchInfo();
+
+            if (searchQuery.length >= 2) {
+                renderSearchResults();
+            } else {
+                renderCurrentPage();
+            }
+        }
+
+        function handleSearchKeydown(event) {
+            if (event.key === 'Escape') {
+                toggleSearch();
+            }
+        }
+
+        function updateSearchInfo() {
+            const info = document.getElementById('searchInfo');
+            const resultCount = document.getElementById('resultCount');
+
+            if (searchQuery.length === 0) {
+                info.textContent = 'Type at least 2 characters to search';
+                resultCount.textContent = '';
+            } else if (searchQuery.length < 2) {
+                info.textContent = 'Type at least 2 characters to search';
+                resultCount.textContent = '';
+            } else {
+                const results = getSearchResults();
+                const count = results.length;
+                info.textContent = count === 0 ? 'No results found' : `Found ${count} result${count === 1 ? '' : 's'}`;
+                resultCount.textContent = count > 0 ? count.toString() : '';
+            }
+        }
+
+        function getSearchResults() {
+            if (searchQuery.length < 2) return [];
+
+            return wikiPages
+                .map(page => ({ page, score: calculateSearchScore(page, searchQuery) }))
+                .filter(result => result.score > 0)
+                .sort((a, b) => b.score - a.score)
+                .map(result => result.page);
+        }
+
+        function calculateSearchScore(page, query) {
+            let score = 0;
+            const queryLower = query.toLowerCase();
+
+            // Title matches (highest priority)
+            if (page.title.toLowerCase().includes(queryLower)) {
+                score += 100;
+                if (page.title.toLowerCase().startsWith(queryLower)) {
+                    score += 50;
+                }
+            }
+
+            // Category matches
+            if (page.category.toLowerCase().includes(queryLower)) {
+                score += 30;
+            }
+
+            // Tag matches
+            for (const tag of page.tags) {
+                if (tag.toLowerCase().includes(queryLower)) {
+                    score += 20;
+                    if (tag.toLowerCase() === queryLower) {
+                        score += 30;
+                    }
+                }
+            }
+
+            // Content matches
+            const contentMatches = page.content.toLowerCase().split(' ')
+                .filter(word => word.includes(queryLower)).length;
+            score += contentMatches * 2;
+
+            return score;
+        }
+
+        function renderSearchResults() {
+            const results = getSearchResults();
+            const contentElement = document.getElementById('wikiContent');
+
+            let html = '<div class="content-block"><h2>Search Results (' + results.length + ')</h2></div>';
+
+            for (const page of results) {
+                html += `
+                    <div class="search-result" onclick="navigateToPageFromSearch('${page.id}')">
+                        <div class="search-result-title">${escapeHtml(page.title)}</div>
+                        <div class="search-result-meta">
+                            <span>${escapeHtml(page.category)}</span>
+                            ${page.tags.filter(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 3).map(tag =>
+                                `<span class="tag-chip">${escapeHtml(tag)}</span>`
+                            ).join('')}
+                        </div>
+                        <div class="search-result-preview">${getContentPreview(page.content, searchQuery)}</div>
+                    </div>
+                `;
+            }
+
+            contentElement.innerHTML = html;
+        }
+
+        function getContentPreview(content, query) {
+            // Clean up content for preview
+            const cleanContent = content
+                .replace(/```[^`]*```/g, '[code]')
+                .replace(/^#+\s*/gm, '')                    // Remove headers
+                .replace(/\*\*([^*]+)\*\*/g, '$1')         // Remove bold formatting
+                .replace(/`([^`]+)`/g, '$1')               // Remove inline code formatting
+                .replace(/^[•-]\s+/gm, '')                 // Remove bullet points
+                .replace(/\/\/.*$/gm, '');                 // Remove comment lines
+
+            // Handle wiki links
+            const wikiLinkPattern = /\[\[([^|\]]+)\|?([^\]]*)\]\]/g;
+            const cleanedContent = cleanContent.replace(wikiLinkPattern, (match, pageId, displayText) => {
+                return displayText || pageId;
+            });
+
+            const queryLower = query.toLowerCase();
+            const contentLower = cleanedContent.toLowerCase();
+            const index = contentLower.indexOf(queryLower);
+
+            if (index === -1) return '';
+
+            const start = Math.max(0, index - 50);
+            const end = Math.min(cleanedContent.length, index + query.length + 50);
+
+            let preview = cleanedContent.substring(start, end).trim();
+            if (start > 0) preview = '...' + preview;
+            if (end < cleanedContent.length) preview = preview + '...';
+
+            return escapeHtml(preview);
+        }
+
+        // Navigation
+        function navigateToPage(pageId) {
+            const page = wikiPages.find(p => p.id === pageId);
+            if (!page) return;
+
+            // Add to navigation history
+            navigationHistory = navigationHistory.slice(0, currentHistoryIndex + 1);
+            navigationHistory.push(pageId);
+            currentHistoryIndex = navigationHistory.length - 1;
+
+            currentPageId = pageId;
+            renderCurrentPage();
+            updateNavigationButtons();
+
+            // Scroll to top
+            document.getElementById('wikiContent').scrollTop = 0;
+        }
+
+        function navigateToPageFromSearch(pageId) {
+            toggleSearch(); // Close search
+            navigateToPage(pageId);
+        }
+
+        function navigateBack() {
+            if (currentHistoryIndex > 0) {
+                currentHistoryIndex--;
+                currentPageId = navigationHistory[currentHistoryIndex];
+                renderCurrentPage();
+                updateNavigationButtons();
+                document.getElementById('wikiContent').scrollTop = 0;
+            }
+        }
+
+        function navigateHome() {
+            const homePage = wikiPages.find(page => page.id === 'quick-start') || wikiPages[0];
+            if (homePage) {
+                navigateToPage(homePage.id);
+            }
+        }
+
+        function updateNavigationButtons() {
+            document.getElementById('backButton').disabled = currentHistoryIndex <= 0;
+        }
+
+        // UI Controls
+        function toggleSearch() {
+            showSearch = !showSearch;
+            const searchSection = document.getElementById('searchSection');
+            const searchToggle = document.getElementById('searchToggle');
+
+            if (showSearch) {
+                searchSection.classList.add('active');
+                searchToggle.classList.add('active');
+                document.getElementById('searchInput').focus();
+            } else {
+                searchSection.classList.remove('active');
+                searchToggle.classList.remove('active');
+                searchQuery = '';
+                document.getElementById('searchInput').value = '';
+                renderCurrentPage();
+                updateSearchInfo();
+            }
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.hasAttribute('data-theme');
+
+            if (isDark) {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function changeFontSize(delta) {
+            fontSize = Math.max(12, Math.min(24, fontSize + delta));
+            document.body.style.fontSize = fontSize + 'px';
+            document.getElementById('fontSizeDisplay').textContent = fontSize + 'px';
+            localStorage.setItem('fontSize', fontSize.toString());
+        }
+
+        async function refreshDocs() {
+            try {
+                document.getElementById('wikiContent').innerHTML = '<div class="loading">Refreshing documentation...</div>';
+                await loadDocumentation();
+                renderCurrentPage();
+                showNotification('Documentation refreshed successfully!');
+            } catch (error) {
+                showError('Failed to refresh documentation: ' + error.message);
+            }
+        }
+
+        // Utility functions
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showError(message) {
+            const contentElement = document.getElementById('wikiContent');
+            contentElement.innerHTML = `<div class="error">Error: ${escapeHtml(message)}</div>`;
+        }
+
+        function showNotification(message) {
+            // Simple notification - you could enhance this
+            alert(message);
+        }
+
+        function copyToClipboard(button) {
+            const codeBlock = button.parentElement;
+            const codeText = codeBlock.textContent.replace('Copy', '').trim();
+
+            navigator.clipboard.writeText(codeText).then(() => {
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        function addWikiLinkListeners() {
+            // Event listeners are already added via onclick in the HTML
+        }
+
+        function addCopyButtonListeners() {
+            // Event listeners are already added via onclick in the HTML
+        }
+
+        function renderSeeAlsoSection(page) {
+            if (page.seeAlso.length === 0) return '';
+
+            const chips = page.seeAlso.map(pageId => {
+                const relatedPage = wikiPages.find(p => p.id === pageId);
+                const title = relatedPage ? relatedPage.title : pageId;
+                return `<span class="see-also-chip" onclick="navigateToPage('${pageId}')">${escapeHtml(title)}</span>`;
+            }).join('');
+
+            return `
+                <div class="see-also-section">
+                    <div class="section-title">See Also</div>
+                    ${chips}
+                </div>
+            `;
+        }
+
+        function renderTagsSection(page) {
+            if (page.tags.length === 0) return '';
+
+            const chips = page.tags.map(tag =>
+                `<span class="tag-chip" onclick="searchForTag('${tag}')">${escapeHtml(tag)}</span>`
+            ).join('');
+
+            return `
+                <div class="tags-section">
+                    <div class="section-title">Tags</div>
+                    ${chips}
+                </div>
+            `;
+        }
+
+        function searchForTag(tag) {
+            document.getElementById('searchInput').value = tag;
+            searchQuery = tag;
+            showSearch = true;
+            document.getElementById('searchSection').classList.add('active');
+            document.getElementById('searchToggle').classList.add('active');
+            renderSearchResults();
+            updateSearchInfo();
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved settings
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+
+            const savedFontSize = localStorage.getItem('fontSize');
+            if (savedFontSize) {
+                fontSize = parseInt(savedFontSize);
+                document.body.style.fontSize = fontSize + 'px';
+                document.getElementById('fontSizeDisplay').textContent = fontSize + 'px';
+            }
+
+            // Initialize app
+            initializeApp();
+
+            // Close settings panel when clicking outside
+            document.addEventListener('click', (event) => {
+                const panel = document.getElementById('settingsPanel');
+                const toggle = document.querySelector('.settings-toggle');
+
+                if (!panel.contains(event.target) && !toggle.contains(event.target)) {
+                    panel.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
