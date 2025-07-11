@@ -189,7 +189,6 @@
         }
 
         .code-block {
-            position: relative;
             background: var(--code-bg);
             border: 1px solid var(--border-color);
             border-radius: 6px;
@@ -198,27 +197,6 @@
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 14px;
             line-height: 1.4;
-        }
-
-        .copy-button {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            opacity: 0.7;
-            transition: all 0.2s ease;
-        }
-
-        .copy-button:hover {
-            opacity: 1;
-            background: var(--primary-color);
-            color: white;
         }
 
         .bullet-list {
@@ -699,7 +677,6 @@
             
             // Add event listeners for wiki links
             addWikiLinkListeners();
-            addCopyButtonListeners();
         }
 
         // Parse markdown content into blocks
@@ -792,8 +769,7 @@
                     const highlightedCode = highlightCode(block.content);
                     return `<div class="content-block">
                         <div class="code-block">
-                            <button class="copy-button" onclick="copyToClipboard(this)">Copy</button>
-                            <div>${highlightedCode}</div>
+                            <pre style="margin: 0; white-space: pre-wrap;">${highlightedCode}</pre>
                         </div>
                     </div>`;
                 
@@ -833,30 +809,51 @@
 
         // Syntax highlighting for code blocks
         function highlightCode(code) {
-            let highlighted = escapeHtml(code);
+            // Start with clean text
+            let lines = code.split('\n');
+            let highlightedLines = [];
             
-            // Comments (do first to avoid highlighting keywords inside comments)
-            highlighted = highlighted.replace(/(\/\/.*$)/gm, '<span class="comment">$1</span>');
+            for (let line of lines) {
+                let highlightedLine = escapeHtml(line);
+                
+                // Skip if the line is already highlighted (shouldn't happen, but safety check)
+                if (highlightedLine.includes('<span')) {
+                    highlightedLines.push(highlightedLine);
+                    continue;
+                }
+                
+                // Comments first (whole line comments)
+                if (highlightedLine.trim().startsWith('//')) {
+                    highlightedLine = `<span class="comment">${highlightedLine}</span>`;
+                } else {
+                    // Global keywords
+                    highlightedLine = highlightedLine.replace(/\b(global)\b/g, '<span class="keyword">$1</span>');
+                    
+                    // MIDI functions
+                    highlightedLine = highlightedLine.replace(/\b(noteOn|noteOff|controlChange|programChange|pitchBend|aftertouch|polyAftertouch)\b/g, '<span class="midi-channel">$1</span>');
+                    highlightedLine = highlightedLine.replace(/\b(delay|start|stop|continue|timingClock|activeSensing|systemReset|tuneRequest|sysEx|endOfSysEx)\b/g, '<span class="midi-system">$1</span>');
+                    
+                    // Numbers (whole words only)
+                    highlightedLine = highlightedLine.replace(/\b(\d+)\b/g, '<span class="number">$1</span>');
+                    
+                    // Operators with spaces around them
+                    highlightedLine = highlightedLine.replace(/(\s)(==|!=|&lt;=|&gt;=|&lt;|&gt;|&amp;&amp;|\|\||&amp;|\|)(\s)/g, '$1<span class="boolean-op">$2</span>$3');
+                    highlightedLine = highlightedLine.replace(/(\s)(\+|-|\*|\/)(\s)/g, '$1<span class="boolean-op">$2</span>$3');
+                    
+                    // Arrow operator
+                    highlightedLine = highlightedLine.replace(/(\s-&gt;\s)/g, '<span class="boolean-op">$1</span>');
+                    
+                    // Assignment operator
+                    highlightedLine = highlightedLine.replace(/(\s=\s)/g, '<span class="boolean-op">$1</span>');
+                    
+                    // Inline comments
+                    highlightedLine = highlightedLine.replace(/(\s\/\/.*$)/g, '<span class="comment">$1</span>');
+                }
+                
+                highlightedLines.push(highlightedLine);
+            }
             
-            // Global variable declarations
-            highlighted = highlighted.replace(/\b(global)\b/g, '<span class="keyword">$1</span>');
-            
-            // MIDI Channel Voice Messages
-            highlighted = highlighted.replace(/\b(noteOn|noteOff|controlChange|programChange|pitchBend|aftertouch|polyAftertouch)\b/g, '<span class="midi-channel">$1</span>');
-            
-            // MIDI System Messages and Functions
-            highlighted = highlighted.replace(/\b(delay|start|stop|continue|timingClock|activeSensing|systemReset|tuneRequest|sysEx|endOfSysEx)\b/g, '<span class="midi-system">$1</span>');
-            
-            // Numbers
-            highlighted = highlighted.replace(/\b\d+\b/g, '<span class="number">$1</span>');
-            
-            // Boolean and comparison operators
-            highlighted = highlighted.replace(/(&amp;|\||==|!=|&lt;=|&gt;=|&lt;|&gt;|=)/g, '<span class="boolean-op">$1</span>');
-            
-            // Arithmetic operators
-            highlighted = highlighted.replace(/(\+|-|\*|\/)/g, '<span class="boolean-op">$1</span>');
-            
-            return highlighted;
+            return highlightedLines.join('\n');
         }
 
         // Search functionality
@@ -1113,25 +1110,7 @@
             alert(message);
         }
 
-        function copyToClipboard(button) {
-            const codeBlock = button.parentElement;
-            const codeText = codeBlock.textContent.replace('Copy', '').trim();
-            
-            navigator.clipboard.writeText(codeText).then(() => {
-                button.textContent = 'Copied!';
-                setTimeout(() => {
-                    button.textContent = 'Copy';
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
-        }
-
         function addWikiLinkListeners() {
-            // Event listeners are already added via onclick in the HTML
-        }
-
-        function addCopyButtonListeners() {
             // Event listeners are already added via onclick in the HTML
         }
 
