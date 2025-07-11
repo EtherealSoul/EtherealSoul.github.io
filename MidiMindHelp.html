@@ -412,9 +412,6 @@
         <div class="wiki-card">
             <div class="wiki-header">
                 <div class="nav-controls">
-                    <button class="nav-button" id="backButton" onclick="navigateBack()" disabled>
-                        ← Back
-                    </button>
                     <button class="nav-button" onclick="navigateHome()">
                         🏠 Home
                     </button>
@@ -445,8 +442,6 @@
         // Global state
         let wikiPages = [];
         let currentPageId = 'quick-start';
-        let navigationHistory = ['quick-start'];
-        let currentHistoryIndex = 0;
         let searchQuery = '';
         let showSearch = false;
         let fontSize = 16;
@@ -475,8 +470,19 @@
         async function initializeApp() {
             try {
                 await loadDocumentation();
+                
+                // Check for URL hash to navigate to specific page
+                const hash = window.location.hash.substring(1); // Remove the #
+                if (hash && wikiPages.find(page => page.id === hash)) {
+                    currentPageId = hash;
+                } else {
+                    // Default to first page or quick-start
+                    const homePage = wikiPages.find(page => page.id === 'quick-start') || wikiPages[0];
+                    currentPageId = homePage.id;
+                }
+                
                 renderCurrentPage();
-                updateNavigationButtons();
+                updateURL();
             } catch (error) {
                 showError('Failed to load documentation: ' + error.message);
             }
@@ -998,14 +1004,9 @@
             const page = wikiPages.find(p => p.id === pageId);
             if (!page) return;
             
-            // Add to navigation history
-            navigationHistory = navigationHistory.slice(0, currentHistoryIndex + 1);
-            navigationHistory.push(pageId);
-            currentHistoryIndex = navigationHistory.length - 1;
-            
             currentPageId = pageId;
+            updateURL();
             renderCurrentPage();
-            updateNavigationButtons();
             
             // Scroll to top
             document.getElementById('wikiContent').scrollTop = 0;
@@ -1016,16 +1017,6 @@
             navigateToPage(pageId);
         }
 
-        function navigateBack() {
-            if (currentHistoryIndex > 0) {
-                currentHistoryIndex--;
-                currentPageId = navigationHistory[currentHistoryIndex];
-                renderCurrentPage();
-                updateNavigationButtons();
-                document.getElementById('wikiContent').scrollTop = 0;
-            }
-        }
-
         function navigateHome() {
             const homePage = wikiPages.find(page => page.id === 'quick-start') || wikiPages[0];
             if (homePage) {
@@ -1033,8 +1024,20 @@
             }
         }
 
-        function updateNavigationButtons() {
-            document.getElementById('backButton').disabled = currentHistoryIndex <= 0;
+        // Update URL hash to reflect current page
+        function updateURL() {
+            if (currentPageId) {
+                window.history.pushState(null, null, '#' + currentPageId);
+            }
+        }
+
+        // Handle browser back/forward buttons
+        function handleHashChange() {
+            const hash = window.location.hash.substring(1);
+            if (hash && hash !== currentPageId && wikiPages.find(page => page.id === hash)) {
+                currentPageId = hash;
+                renderCurrentPage();
+            }
         }
 
         // UI Controls
@@ -1170,6 +1173,9 @@
                 document.body.style.fontSize = fontSize + 'px';
                 document.getElementById('fontSizeDisplay').textContent = fontSize + 'px';
             }
+            
+            // Listen for hash changes (browser back/forward)
+            window.addEventListener('hashchange', handleHashChange);
             
             // Initialize app
             initializeApp();
