@@ -1,7 +1,8 @@
 # Midi Mind Manager
 **Professional MIDI Processing & Transformation**
 
-![Midi Mind Device](images/midi-mind-device.jpg)
+<img src="gifs/midi-mind-device.gif" alt="Midi Mind Device" style="width: 30%;">
+
 *The Midi Mind hardware processor with MIDI TRS-A I/O and USB-C power*
 
 ## Overview
@@ -15,11 +16,6 @@ The **Midi Mind** is a compact, professional MIDI processor designed for live pe
 - **Professional connectivity** via MIDI TRS-A standard
 - **USB-C powered** for reliable operation
 - **Bluetooth configuration** via Midi Mind Manager app
-
-## How It Works
-
-![MIDI Signal Flow](images/midi-signal-flow.png)
-*MIDI flows from your controller through Midi Mind's programmable processor to your sound modules*
 
 ### Hardware
 The Midi Mind device sits between your MIDI controller and sound modules, processing every MIDI message according to your programmed rules:
@@ -70,7 +66,8 @@ noteOn(ch, note, vel) ->
 
 ## Midi Mind Manager App
 
-![App Interface](images/app-interface.png)
+<img src="images/midi-mind-manager-logo.jpg" alt="Midi Mind Manager" style="width: 30%;">
+
 *The Midi Mind Manager provides a complete development environment for MIDI rules*
 
 The **Midi Mind Manager** iOS and Android app is your control center for one or more Midi Mind devices:
