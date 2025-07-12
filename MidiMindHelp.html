@@ -45,19 +45,15 @@
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .wiki-card {
             background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
         }
 
         .wiki-header {
@@ -151,9 +147,9 @@
         }
 
         .wiki-content {
-            padding: 20px;
-            max-height: 70vh;
-            overflow-y: auto;
+            padding: 40px;
+            flex: 1;
+            background: var(--bg-color);
         }
 
         .content-block {
@@ -314,9 +310,10 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             display: none;
             z-index: 100;
+            min-width: 200px;
         }
 
         .settings-toggle {
@@ -326,11 +323,12 @@
             background: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px;
+            padding: 12px;
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             z-index: 101;
+            font-size: 16px;
         }
 
         .theme-toggle {
@@ -371,32 +369,48 @@
 
         /* Responsive design */
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
+            .wiki-content {
+                padding: 20px;
             }
-            
+
             .wiki-header {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 8px;
+                padding: 12px 20px;
             }
-            
+
             .page-title {
                 font-size: 20px;
                 text-align: center;
             }
-            
+
             .nav-controls {
                 display: flex;
                 justify-content: center;
                 gap: 8px;
+            }
+
+            .settings-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .settings-panel {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                right: 10px;
+                width: auto;
             }
         }
     </style>
 </head>
 <body>
     <button class="settings-toggle" onclick="toggleSettings()">⚙️</button>
-    
+
     <div class="settings-panel" id="settingsPanel">
         <button class="theme-toggle" onclick="toggleTheme()">🌙 Toggle Dark Mode</button>
         <div class="font-size-control">
@@ -422,13 +436,13 @@
                     🔍 Search
                 </button>
             </div>
-            
+
             <div class="search-section" id="searchSection">
-                <input type="text" class="search-input" id="searchInput" placeholder="Search documentation..." 
+                <input type="text" class="search-input" id="searchInput" placeholder="Search documentation..."
                        oninput="handleSearch()" onkeydown="handleSearchKeydown(event)">
                 <div class="search-info" id="searchInfo">Type at least 2 characters to search</div>
             </div>
-            
+
             <div class="wiki-content" id="wikiContent">
                 <div class="loading">Loading documentation...</div>
             </div>
@@ -470,7 +484,7 @@
         async function initializeApp() {
             try {
                 await loadDocumentation();
-                
+
                 // Check for URL hash to navigate to specific page
                 const hash = window.location.hash.substring(1); // Remove the #
                 if (hash && wikiPages.find(page => page.id === hash)) {
@@ -480,7 +494,7 @@
                     const homePage = wikiPages.find(page => page.id === 'quick-start') || wikiPages[0];
                     currentPageId = homePage.id;
                 }
-                
+
                 renderCurrentPage();
                 updateURL();
             } catch (error) {
@@ -495,11 +509,11 @@
                 if (!response.ok) {
                     throw new Error(`Failed to load documentation: HTTP ${response.status}`);
                 }
-                
+
                 const content = await response.text();
                 wikiPages = parseDocumentation(content);
                 console.log('Loaded documentation:', wikiPages.length, 'pages');
-                
+
                 if (wikiPages.length === 0) {
                     throw new Error('No documentation pages could be parsed');
                 }
@@ -512,39 +526,39 @@
         // Parse documentation content into WikiPage objects
         function parseDocumentation(content) {
             console.log('Parsing documentation content:', content.length, 'characters');
-            
+
             const pages = [];
             const sections = [];
             const lines = content.split('\n');
-            
+
             let currentSection = [];
             let inSection = false;
-            
+
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
-                
+
                 if (line === '---') {
                     if (!inSection) {
                         inSection = true;
                         currentSection = [];
                     } else {
                         inSection = false;
-                        
+
                         // Collect content until next --- or end of file
                         const contentLines = [];
                         i++; // Skip the closing ---
-                        
+
                         while (i < lines.length && lines[i].trim() !== '---') {
                             contentLines.push(lines[i]);
                             i++;
                         }
-                        
+
                         // Add complete section
                         const frontMatter = currentSection.join('\n');
                         const sectionContent = contentLines.join('\n').trim();
                         const completeSection = frontMatter + '\n---SPLIT---\n' + sectionContent;
                         sections.push(completeSection);
-                        
+
                         // Step back one line since loop will increment
                         if (i < lines.length) i--;
                         currentSection = [];
@@ -553,9 +567,9 @@
                     currentSection.push(line);
                 }
             }
-            
+
             console.log('Found', sections.length, 'sections');
-            
+
             // Parse each section
             for (let i = 0; i < sections.length; i++) {
                 try {
@@ -567,7 +581,7 @@
                     console.error('Error parsing section', i + 1, ':', error);
                 }
             }
-            
+
             return pages;
         }
 
@@ -578,20 +592,20 @@
                 console.warn('Section does not have exactly 2 parts');
                 return null;
             }
-            
+
             const frontMatterText = parts[0].trim();
             const content = parts[1].trim();
-            
+
             // Parse front matter
             const frontMatterLines = frontMatterText.split('\n');
             const metadata = parseFrontMatter(frontMatterLines);
-            
+
             // Validate required fields
             if (!metadata.id || !metadata.title || !metadata.category) {
                 console.warn('Missing required fields in front matter');
                 return null;
             }
-            
+
             return new WikiPage(
                 metadata.id,
                 metadata.title,
@@ -605,32 +619,32 @@
         // Parse front matter
         function parseFrontMatter(lines) {
             const metadata = {};
-            
+
             for (const line of lines) {
                 const trimmed = line.trim();
                 if (!trimmed || trimmed.startsWith('#')) continue;
-                
+
                 const colonIndex = trimmed.indexOf(':');
                 if (colonIndex === -1) continue;
-                
+
                 const key = trimmed.substring(0, colonIndex).trim();
                 const value = trimmed.substring(colonIndex + 1).trim();
                 metadata[key] = value;
             }
-            
+
             return metadata;
         }
 
         // Parse list values
         function parseList(value) {
             if (!value) return [];
-            
+
             // Handle YAML list format: [item1, item2, item3]
             if (value.startsWith('[') && value.endsWith(']')) {
                 const content = value.substring(1, value.length - 1);
                 return content.split(',').map(item => item.trim()).filter(item => item);
             }
-            
+
             // Handle comma-separated format
             return value.split(',').map(item => item.trim()).filter(item => item);
         }
@@ -647,9 +661,9 @@
                 showError('Page not found');
                 return;
             }
-            
+
             document.getElementById('pageTitle').textContent = page.title;
-            
+
             if (showSearch && searchQuery.length >= 2) {
                 renderSearchResults();
             } else {
@@ -661,26 +675,26 @@
         function renderPageContent(page) {
             const contentElement = document.getElementById('wikiContent');
             const contentBlocks = parseMarkdownContent(page.content);
-            
+
             let html = '';
-            
+
             // Render content blocks
             for (const block of contentBlocks) {
                 html += renderContentBlock(block);
             }
-            
+
             // Add See Also section
             if (page.seeAlso.length > 0) {
                 html += renderSeeAlsoSection(page);
             }
-            
+
             // Add Tags section
             if (page.tags.length > 0) {
                 html += renderTagsSection(page);
             }
-            
+
             contentElement.innerHTML = html;
-            
+
             // Add event listeners for wiki links
             addWikiLinkListeners();
         }
@@ -690,10 +704,10 @@
             const blocks = [];
             const lines = content.split('\n');
             let i = 0;
-            
+
             while (i < lines.length) {
                 const line = lines[i];
-                
+
                 if (line.startsWith('#')) {
                     // Headers
                     let level = 0;
@@ -709,18 +723,18 @@
                     // Code blocks
                     const codeLines = [];
                     i++; // Skip opening ```
-                    
+
                     while (i < lines.length && !lines[i].trim().startsWith('```')) {
                         codeLines.push(lines[i]);
                         i++;
                     }
-                    
+
                     if (i < lines.length) i++; // Skip closing ```
                     blocks.push(new ContentBlock('code', codeLines.join('\n')));
                 } else if (line.trimLeft().startsWith('•') || line.trimLeft().startsWith('-')) {
                     // Bullet lists
                     const listItems = [];
-                    
+
                     while (i < lines.length) {
                         const currentLine = lines[i].trimLeft();
                         if (currentLine.startsWith('•') || currentLine.startsWith('-')) {
@@ -734,7 +748,7 @@
                             break;
                         }
                     }
-                    
+
                     blocks.push(new ContentBlock('list', listItems));
                 } else if (line === '') {
                     // Empty lines
@@ -742,10 +756,10 @@
                 } else {
                     // Regular paragraphs
                     const paragraphLines = [];
-                    
+
                     while (i < lines.length) {
                         const currentLine = lines[i];
-                        if (currentLine === '' || 
+                        if (currentLine === '' ||
                             currentLine.startsWith('#') ||
                             currentLine.trim().startsWith('```') ||
                             currentLine.trimLeft().startsWith('•') ||
@@ -755,13 +769,13 @@
                         paragraphLines.push(currentLine);
                         i++;
                     }
-                    
+
                     if (paragraphLines.length > 0) {
                         blocks.push(new ContentBlock('paragraph', paragraphLines.join('\n')));
                     }
                 }
             }
-            
+
             return blocks;
         }
 
@@ -770,7 +784,7 @@
             switch (block.type) {
                 case 'header':
                     return `<div class="content-block"><h${block.level}>${escapeHtml(block.content)}</h${block.level}></div>`;
-                
+
                 case 'code':
                     const highlightedCode = highlightCode(block.content);
                     return `<div class="content-block">
@@ -778,19 +792,19 @@
                             <pre style="margin: 0; white-space: pre-wrap;">${highlightedCode}</pre>
                         </div>
                     </div>`;
-                
+
                 case 'list':
-                    const listItems = block.content.map(item => 
+                    const listItems = block.content.map(item =>
                         `<div class="bullet-item">
                             <span class="bullet-marker">•</span>
                             <div>${formatInlineText(item)}</div>
                         </div>`
                     ).join('');
                     return `<div class="content-block"><div class="bullet-list">${listItems}</div></div>`;
-                
+
                 case 'paragraph':
                     return `<div class="content-block"><p>${formatInlineText(block.content)}</p></div>`;
-                
+
                 default:
                     return '';
             }
@@ -803,13 +817,13 @@
                 const display = displayText || pageId;
                 return `<span class="wiki-link" onclick="navigateToPage('${pageId}')">${escapeHtml(display)}</span>`;
             });
-            
+
             // Handle bold text
             text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-            
+
             // Handle inline code
             text = text.replace(/`([^`]+)`/g, '<code style="background: var(--code-bg); padding: 2px 4px; border-radius: 3px; font-family: monospace;">$1</code>');
-            
+
             return text;
         }
 
@@ -818,47 +832,47 @@
             // Start with clean text
             let lines = code.split('\n');
             let highlightedLines = [];
-            
+
             for (let line of lines) {
                 let highlightedLine = escapeHtml(line);
-                
+
                 // Skip if the line is already highlighted (shouldn't happen, but safety check)
                 if (highlightedLine.includes('<span')) {
                     highlightedLines.push(highlightedLine);
                     continue;
                 }
-                
+
                 // Comments first (whole line comments)
                 if (highlightedLine.trim().startsWith('//')) {
                     highlightedLine = `<span class="comment">${highlightedLine}</span>`;
                 } else {
                     // Global keywords
                     highlightedLine = highlightedLine.replace(/\b(global)\b/g, '<span class="keyword">$1</span>');
-                    
+
                     // MIDI functions
                     highlightedLine = highlightedLine.replace(/\b(noteOn|noteOff|controlChange|programChange|pitchBend|aftertouch|polyAftertouch)\b/g, '<span class="midi-channel">$1</span>');
                     highlightedLine = highlightedLine.replace(/\b(delay|start|stop|continue|timingClock|activeSensing|systemReset|tuneRequest|sysEx|endOfSysEx)\b/g, '<span class="midi-system">$1</span>');
-                    
+
                     // Numbers (whole words only)
                     highlightedLine = highlightedLine.replace(/\b(\d+)\b/g, '<span class="number">$1</span>');
-                    
+
                     // Operators with spaces around them
                     highlightedLine = highlightedLine.replace(/(\s)(==|!=|&lt;=|&gt;=|&lt;|&gt;|&amp;&amp;|\|\||&amp;|\|)(\s)/g, '$1<span class="boolean-op">$2</span>$3');
                     highlightedLine = highlightedLine.replace(/(\s)(\+|-|\*|\/)(\s)/g, '$1<span class="boolean-op">$2</span>$3');
-                    
+
                     // Arrow operator
                     highlightedLine = highlightedLine.replace(/(\s-&gt;\s)/g, '<span class="boolean-op">$1</span>');
-                    
+
                     // Assignment operator
                     highlightedLine = highlightedLine.replace(/(\s=\s)/g, '<span class="boolean-op">$1</span>');
-                    
+
                     // Inline comments
                     highlightedLine = highlightedLine.replace(/(\s\/\/.*$)/g, '<span class="comment">$1</span>');
                 }
-                
+
                 highlightedLines.push(highlightedLine);
             }
-            
+
             return highlightedLines.join('\n');
         }
 
@@ -866,7 +880,7 @@
         function handleSearch() {
             searchQuery = document.getElementById('searchInput').value;
             updateSearchInfo();
-            
+
             if (searchQuery.length >= 2) {
                 renderSearchResults();
             } else {
@@ -883,7 +897,7 @@
         function updateSearchInfo() {
             const info = document.getElementById('searchInfo');
             const resultCount = document.getElementById('resultCount');
-            
+
             if (searchQuery.length === 0) {
                 info.textContent = 'Type at least 2 characters to search';
                 resultCount.textContent = '';
@@ -900,7 +914,7 @@
 
         function getSearchResults() {
             if (searchQuery.length < 2) return [];
-            
+
             return wikiPages
                 .map(page => ({ page, score: calculateSearchScore(page, searchQuery) }))
                 .filter(result => result.score > 0)
@@ -911,7 +925,7 @@
         function calculateSearchScore(page, query) {
             let score = 0;
             const queryLower = query.toLowerCase();
-            
+
             // Title matches (highest priority)
             if (page.title.toLowerCase().includes(queryLower)) {
                 score += 100;
@@ -919,12 +933,12 @@
                     score += 50;
                 }
             }
-            
+
             // Category matches
             if (page.category.toLowerCase().includes(queryLower)) {
                 score += 30;
             }
-            
+
             // Tag matches
             for (const tag of page.tags) {
                 if (tag.toLowerCase().includes(queryLower)) {
@@ -934,28 +948,28 @@
                     }
                 }
             }
-            
+
             // Content matches
             const contentMatches = page.content.toLowerCase().split(' ')
                 .filter(word => word.includes(queryLower)).length;
             score += contentMatches * 2;
-            
+
             return score;
         }
 
         function renderSearchResults() {
             const results = getSearchResults();
             const contentElement = document.getElementById('wikiContent');
-            
+
             let html = '<div class="content-block"><h2>Search Results (' + results.length + ')</h2></div>';
-            
+
             for (const page of results) {
                 html += `
                     <div class="search-result" onclick="navigateToPageFromSearch('${page.id}')">
                         <div class="search-result-title">${escapeHtml(page.title)}</div>
                         <div class="search-result-meta">
                             <span>${escapeHtml(page.category)}</span>
-                            ${page.tags.filter(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 3).map(tag => 
+                            ${page.tags.filter(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 3).map(tag =>
                                 `<span class="tag-chip">${escapeHtml(tag)}</span>`
                             ).join('')}
                         </div>
@@ -963,7 +977,7 @@
                     </div>
                 `;
             }
-            
+
             contentElement.innerHTML = html;
         }
 
@@ -976,7 +990,7 @@
                 .replace(/`([^`]+)`/g, '$1')               // Remove inline code formatting
                 .replace(/^[•-]\s+/gm, '')                 // Remove bullet points
                 .replace(/\/\/.*$/gm, '');                 // Remove comment lines
-            
+
             // Handle wiki links
             const wikiLinkPattern = /\[\[([^|\]]+)\|?([^\]]*)\]\]/g;
             const cleanedContent = cleanContent.replace(wikiLinkPattern, (match, pageId, displayText) => {
@@ -986,16 +1000,16 @@
             const queryLower = query.toLowerCase();
             const contentLower = cleanedContent.toLowerCase();
             const index = contentLower.indexOf(queryLower);
-            
+
             if (index === -1) return '';
-            
+
             const start = Math.max(0, index - 50);
             const end = Math.min(cleanedContent.length, index + query.length + 50);
-            
+
             let preview = cleanedContent.substring(start, end).trim();
             if (start > 0) preview = '...' + preview;
             if (end < cleanedContent.length) preview = preview + '...';
-            
+
             return escapeHtml(preview);
         }
 
@@ -1003,13 +1017,13 @@
         function navigateToPage(pageId) {
             const page = wikiPages.find(p => p.id === pageId);
             if (!page) return;
-            
+
             currentPageId = pageId;
             updateURL();
             renderCurrentPage();
-            
-            // Scroll to top
-            document.getElementById('wikiContent').scrollTop = 0;
+
+            // Scroll to top of page
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function navigateToPageFromSearch(pageId) {
@@ -1045,11 +1059,14 @@
             showSearch = !showSearch;
             const searchSection = document.getElementById('searchSection');
             const searchToggle = document.getElementById('searchToggle');
-            
+
             if (showSearch) {
                 searchSection.classList.add('active');
                 searchToggle.classList.add('active');
-                document.getElementById('searchInput').focus();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => {
+                    document.getElementById('searchInput').focus();
+                }, 300);
             } else {
                 searchSection.classList.remove('active');
                 searchToggle.classList.remove('active');
@@ -1068,7 +1085,7 @@
         function toggleTheme() {
             const body = document.body;
             const isDark = body.hasAttribute('data-theme');
-            
+
             if (isDark) {
                 body.removeAttribute('data-theme');
                 localStorage.setItem('theme', 'light');
@@ -1119,13 +1136,13 @@
 
         function renderSeeAlsoSection(page) {
             if (page.seeAlso.length === 0) return '';
-            
+
             const chips = page.seeAlso.map(pageId => {
                 const relatedPage = wikiPages.find(p => p.id === pageId);
                 const title = relatedPage ? relatedPage.title : pageId;
                 return `<span class="see-also-chip" onclick="navigateToPage('${pageId}')">${escapeHtml(title)}</span>`;
             }).join('');
-            
+
             return `
                 <div class="see-also-section">
                     <div class="section-title">See Also</div>
@@ -1136,11 +1153,11 @@
 
         function renderTagsSection(page) {
             if (page.tags.length === 0) return '';
-            
-            const chips = page.tags.map(tag => 
+
+            const chips = page.tags.map(tag =>
                 `<span class="tag-chip" onclick="searchForTag('${tag}')">${escapeHtml(tag)}</span>`
             ).join('');
-            
+
             return `
                 <div class="tags-section">
                     <div class="section-title">Tags</div>
@@ -1166,25 +1183,25 @@
             if (savedTheme === 'dark') {
                 document.body.setAttribute('data-theme', 'dark');
             }
-            
+
             const savedFontSize = localStorage.getItem('fontSize');
             if (savedFontSize) {
                 fontSize = parseInt(savedFontSize);
                 document.body.style.fontSize = fontSize + 'px';
                 document.getElementById('fontSizeDisplay').textContent = fontSize + 'px';
             }
-            
+
             // Listen for hash changes (browser back/forward)
             window.addEventListener('hashchange', handleHashChange);
-            
+
             // Initialize app
             initializeApp();
-            
+
             // Close settings panel when clicking outside
             document.addEventListener('click', (event) => {
                 const panel = document.getElementById('settingsPanel');
                 const toggle = document.querySelector('.settings-toggle');
-                
+
                 if (!panel.contains(event.target) && !toggle.contains(event.target)) {
                     panel.style.display = 'none';
                 }
