@@ -1,0 +1,87 @@
+{
+  "id": "channel_router",
+  "name": "Channel Router",
+  "version": "1.0",
+  "category": "Routing",
+  "description": "Routes MIDI messages between channels with filtering",
+  "entryElements": [
+    {
+      "id": "from",
+      "label": "FROM",
+      "controlType": "dropdown",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Source MIDI channel",
+      "valueConstraints": {
+        "type": "options",
+        "options": [
+          {"value": 1, "label": "CH-01"}, {"value": 2, "label": "CH-02"},
+          {"value": 3, "label": "CH-03"}, {"value": 4, "label": "CH-04"},
+          {"value": 5, "label": "CH-05"}, {"value": 6, "label": "CH-06"},
+          {"value": 7, "label": "CH-07"}, {"value": 8, "label": "CH-08"},
+          {"value": 9, "label": "CH-09"}, {"value": 10, "label": "CH-10"},
+          {"value": 11, "label": "CH-11"}, {"value": 12, "label": "CH-12"},
+          {"value": 13, "label": "CH-13"}, {"value": 14, "label": "CH-14"},
+          {"value": 15, "label": "CH-15"}, {"value": 16, "label": "CH-16"}
+        ],
+        "default": 1
+      }
+    },
+    {
+      "id": "to",
+      "label": "TO",
+      "controlType": "dropdown",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Destination MIDI channel",
+      "valueConstraints": {
+        "type": "options",
+        "options": [
+          {"value": 1, "label": "CH-01"}, {"value": 2, "label": "CH-02"},
+          {"value": 3, "label": "CH-03"}, {"value": 4, "label": "CH-04"},
+          {"value": 5, "label": "CH-05"}, {"value": 6, "label": "CH-06"},
+          {"value": 7, "label": "CH-07"}, {"value": 8, "label": "CH-08"},
+          {"value": 9, "label": "CH-09"}, {"value": 10, "label": "CH-10"},
+          {"value": 11, "label": "CH-11"}, {"value": 12, "label": "CH-12"},
+          {"value": 13, "label": "CH-13"}, {"value": 14, "label": "CH-14"},
+          {"value": 15, "label": "CH-15"}, {"value": 16, "label": "CH-16"}
+        ],
+        "default": 2
+      }
+    },
+    {
+      "id": "filter",
+      "label": "FILTER",
+      "controlType": "dropdown",
+      "direction": "config",
+      "dataType": "string",
+      "description": "Message type filter",
+      "valueConstraints": {
+        "type": "options",
+        "options": [
+          {"value": "all", "label": "All"},
+          {"value": "notes", "label": "Notes Only"},
+          {"value": "cc", "label": "CC Only"},
+          {"value": "program", "label": "Program Only"}
+        ],
+        "default": "all"
+      }
+    }
+  ],
+  "template": [
+    "@{if filter == 'all' or filter == 'notes':",
+    "  noteOn(@{from}, note, vel) -> noteOn(@{to}, note, vel);",
+    "  noteOff(@{from}, note, vel) -> noteOff(@{to}, note, vel);",
+    "}",
+    "@{if filter == 'all' or filter == 'cc':",
+    "  controlChange(@{from}, cc, val) -> controlChange(@{to}, cc, val);",
+    "}",
+    "@{if filter == 'all' or filter == 'program':",
+    "  programChange(@{from}, prog) -> programChange(@{to}, prog);",
+    "}"
+  ],
+  "generates": {
+    "variables": [],
+    "rules": ["${instanceId}_note_routing", "${instanceId}_cc_routing", "${instanceId}_program_routing"]
+  }
+}

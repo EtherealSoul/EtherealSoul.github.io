@@ -1,0 +1,208 @@
+{
+  "id": "temp_designer_widget",
+  "name": "Filter Message Channels",
+  "category": "Transform",
+  "description": "",
+  "version": "1.0",
+  "entryElements": [
+    {
+      "id": "multiSelect_1753284959841",
+      "label": "message_type_filter",
+      "controlType": "multiSelect",
+      "direction": "config",
+      "dataType": "stringArray",
+      "description": "Multiple choice (int/string arrays) control",
+      "valueConstraints": {
+        "type": "multiSelect",
+        "min": null,
+        "max": null,
+        "default": [
+          "noteOn",
+          "noteOff"
+        ],
+        "options": [
+          {
+            "value": "noteOn",
+            "label": "Note On"
+          },
+          {
+            "value": "noteOff",
+            "label": "Note Off"
+          },
+          {
+            "value": "controlChange",
+            "label": "Control Change"
+          },
+          {
+            "value": "programChange",
+            "label": "Program Change"
+          },
+          {
+            "value": "pitchBend",
+            "label": "Pitch Bend"
+          },
+          {
+            "value": "aftertouch",
+            "label": "Aftertouch"
+          },
+          {
+            "value": "polyAftertouch",
+            "label": "Polyphonic Aftertouch"
+          },
+          {
+            "value": "sysEx",
+            "label": "System Exclusive"
+          },
+          {
+            "value": "timingClock",
+            "label": "Timing Clock"
+          },
+          {
+            "value": "start",
+            "label": "Start"
+          },
+          {
+            "value": "stop",
+            "label": "Stop"
+          },
+          {
+            "value": "continue",
+            "label": "Continue"
+          },
+          {
+            "value": "songPosition",
+            "label": "Song Position Pointer"
+          },
+          {
+            "value": "songSelect",
+            "label": "Song Select"
+          },
+          {
+            "value": "tuneRequest",
+            "label": "Tune Request"
+          },
+          {
+            "value": "activeSensing",
+            "label": "Active Sensing"
+          },
+          {
+            "value": "systemReset",
+            "label": "System Reset"
+          }
+        ]
+      }
+    },
+    {
+      "id": "multiSelect_1753284960554",
+      "label": "Filter Out Channels",
+      "controlType": "multiSelect",
+      "direction": "config",
+      "dataType": "intArray",
+      "description": "Multiple choice (int/string arrays) control",
+      "valueConstraints": {
+        "type": "multiSelect",
+        "min": null,
+        "max": null,
+        "default": [
+          1
+        ],
+        "options": [
+          {
+            "value": 1,
+            "label": "Channel 1"
+          },
+          {
+            "value": 2,
+            "label": "Channel 2"
+          },
+          {
+            "value": 3,
+            "label": "Channel 3"
+          },
+          {
+            "value": 4,
+            "label": "Channel 4"
+          },
+          {
+            "value": 5,
+            "label": "Channel 5"
+          },
+          {
+            "value": 6,
+            "label": "Channel 6"
+          },
+          {
+            "value": 7,
+            "label": "Channel 7"
+          },
+          {
+            "value": 8,
+            "label": "Channel 8"
+          },
+          {
+            "value": 9,
+            "label": "Channel 9"
+          },
+          {
+            "value": 10,
+            "label": "Channel 10"
+          },
+          {
+            "value": 11,
+            "label": "Channel 11"
+          },
+          {
+            "value": 12,
+            "label": "Channel 12"
+          },
+          {
+            "value": 13,
+            "label": "Channel 13"
+          },
+          {
+            "value": 14,
+            "label": "Channel 14"
+          },
+          {
+            "value": 15,
+            "label": "Channel 15"
+          },
+          {
+            "value": 16,
+            "label": "Channel 16"
+          }
+        ]
+      }
+    }
+  ],
+  "template": [
+    "@{for mess in message_type_filter: @{mess}(@{",
+    "  if mess in [\"noteOn\", \"noteOff\"]: ch, note, vel",
+    "  else if mess in [\"programChange\"]: ch, program",
+    "  else if mess in [\"controlChange\", \"cc\"]: ch, controller, value",
+    "  else if mess in [\"pitchBend\"]: ch, value",
+    "  else if mess in [\"aftertouch\", \"channelPressure\"]: ch, pressure",
+    "  else if mess in [\"polyAftertouch\", \"polyPressure\"]: ch, note, pressure",
+    "  else if mess in [\"allNotesOff\", \"allSoundOff\", \"resetAllControllers\"]: ch",
+    "  else if mess in [\"songPosition\"]: position",
+    "  else if mess in [\"songSelect\"]: song",
+    "  else if mess in [\"midiTimeCode\", \"mtc\"]: data",
+    "  else if mess in [\"sysEx\"]: data",
+    "  else if mess in [\"timingClock\", \"start\", \"continue\", \"stop\", \"activeSensing\", \"reset\", \"tuneRequest\"]: ",
+    "  else: // Unknown message type - no parameters",
+    "})@{if mess in [\"noteOn\", \"noteOff\", \"programChange\", \"controlChange\", \"pitchBend\", \"aftertouch\", \"polyAftertouch\"] and filter_out_channels!=[]:",
+    "  &(@{for i in range(length(filter_out_channels)):",
+    "           @{if i>0: |}ch==@{filter_out_channels[i]}",
+    "  })",
+    "",
+    "",
+    "}->;@{\"\\n\"}} "
+  ],
+  "documentation": null,
+  "generates": {
+    "variables": [],
+    "rules": [
+      "${instanceId}_processor"
+    ]
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "id": "multi_tap_delay",
+  "name": "Multi-Tap Delay",
+  "version": "1.0",
+  "category": "Effect",
+  "description": "Advanced delay with configurable tap count and optional transposition",
+  "documentation": {
+    "overview": "Creates multiple delayed echoes with optional pitch shifting. Uses advanced template language features including conditionals, loops, and config-time processing.",
+    "examples": [
+      "Set count=3 for triple echoes",
+      "Enable transpose for rising pitch delay",
+      "Use channels for multi-channel routing"
+    ],
+    "tips": [
+      "Higher delay counts create richer textures",
+      "Combine with reverb for ambient effects"
+    ]
+  },
+  "entryElements": [
+    {
+      "id": "count",
+      "label": "COUNT",
+      "controlType": "number",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Number of delay taps (config-time processed)",
+      "valueConstraints": {
+        "type": "range",
+        "min": 1,
+        "max": 8,
+        "default": 3
+      }
+    },
+    {
+      "id": "time",
+      "label": "TIME",
+      "controlType": "knob",
+      "direction": "input",
+      "dataType": "int",
+      "description": "Base delay time in MIDI ticks (CV controllable)",
+      "valueConstraints": {
+        "type": "range",
+        "min": 6,
+        "max": 96,
+        "default": 24
+      }
+    },
+    {
+      "id": "transpose",
+      "label": "TRANSPOSE",
+      "controlType": "checkbox",
+      "direction": "config",
+      "dataType": "boolean",
+      "description": "Enable pitch shifting on delays",
+      "valueConstraints": {
+        "type": "boolean",
+        "default": false
+      }
+    },
+    {
+      "id": "intervals",
+      "label": "INTERVALS",
+      "controlType": "intArray",
+      "direction": "config",
+      "dataType": "intArray",
+      "description": "Semitone intervals for each tap",
+      "valueConstraints": {
+        "type": "intArray",
+        "min": -24,
+        "max": 24,
+        "default": [0, 2, 4, 7]
+      }
+    },
+    {
+      "id": "channels",
+      "label": "CHANNELS",
+      "controlType": "multiSelect",
+      "direction": "config",
+      "dataType": "intArray",
+      "description": "Input channels to process",
+      "valueConstraints": {
+        "type": "multiSelect",
+        "options": [
+          {"value": 1, "label": "Ch 1"}, {"value": 2, "label": "Ch 2"},
+          {"value": 3, "label": "Ch 3"}, {"value": 4, "label": "Ch 4"},
+          {"value": 5, "label": "Ch 5"}, {"value": 6, "label": "Ch 6"},
+          {"value": 7, "label": "Ch 7"}, {"value": 8, "label": "Ch 8"}
+        ],
+        "default": [1, 2]
+      }
+    },
+    {
+      "id": "feedback",
+      "label": "FEEDBACK%",
+      "controlType": "knob",
+      "direction": "input",
+      "dataType": "int",
+      "description": "Delay feedback percentage (CV controllable)",
+      "valueConstraints": {
+        "type": "range",
+        "min": 0,
+        "max": 95,
+        "default": 30
+      }
+    },
+    {
+      "id": "output",
+      "label": "output",
+      "controlType": "jack",
+      "direction": "output",
+      "dataType": "int",
+      "description": "Processed output with delays",
+      "valueConstraints": {
+        "type": "range"
+      }
+    }
+  ],
+  "template": [
+    "// Multi-Tap Delay: @{count} taps, transpose=@{transpose}",
+    "global ${output} = 0;",
+    "",
+    "@{for input_ch in channels:",
+    "  @{if transpose:",
+    "    // With transposition - cycle through intervals",
+    "    noteOn(@{input_ch}, note, vel) -> ",
+    "      noteOn(@{input_ch}, note, vel)@{for i in range(count): , delay(@{(i + 1)} * ${time}), noteOn(@{input_ch}, note + @{intervals[i % len(intervals)]}, (vel * ${feedback}) / @{100 + i * 20})},",
+    "      ${output} = note;",
+    "",
+    "    noteOff(@{input_ch}, note, vel) -> ",
+    "      noteOff(@{input_ch}, note, vel)@{for i in range(count): , delay(@{(i + 1)} * ${time}), noteOff(@{input_ch}, note + @{intervals[i % len(intervals)]}, vel)};",
+    "  else:",
+    "    // Without transposition",
+    "    noteOn(@{input_ch}, note, vel) -> ",
+    "      noteOn(@{input_ch}, note, vel)@{for i in range(count): , delay(@{(i + 1)} * ${time}), noteOn(@{input_ch}, note, (vel * ${feedback}) / @{100 + i * 20})},",
+    "      ${output} = note;",
+    "",
+    "    noteOff(@{input_ch}, note, vel) -> ",
+    "      noteOff(@{input_ch}, note, vel)@{for i in range(count): , delay(@{(i + 1)} * ${time}), noteOff(@{input_ch}, note, vel)};",
+    "  }",
+    "}"
+  ],
+  "generates": {
+    "variables": ["${output}"],
+    "rules": ["${instanceId}_delay_processor"]
+  }
+}

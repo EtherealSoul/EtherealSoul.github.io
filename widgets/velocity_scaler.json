@@ -1,0 +1,74 @@
+{
+  "id": "velocity_scaler",
+  "name": "Velocity Scaler",
+  "version": "1.0",
+  "category": "Transform",
+  "description": "Scales MIDI note velocities with clamping",
+  "entryElements": [
+    {
+      "id": "scale",
+      "label": "SCALE%",
+      "controlType": "knob",
+      "direction": "input",
+      "dataType": "int",
+      "description": "Velocity scale percentage (CV controllable)",
+      "valueConstraints": {
+        "type": "range",
+        "min": 10,
+        "max": 200,
+        "default": 100
+      }
+    },
+    {
+      "id": "min_vel",
+      "label": "MIN VEL",
+      "controlType": "number",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Minimum output velocity",
+      "valueConstraints": {
+        "type": "range",
+        "min": 1,
+        "max": 127,
+        "default": 1
+      }
+    },
+    {
+      "id": "max_vel",
+      "label": "MAX VEL",
+      "controlType": "number",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Maximum output velocity",
+      "valueConstraints": {
+        "type": "range",
+        "min": 1,
+        "max": 127,
+        "default": 127
+      }
+    },
+    {
+      "id": "output",
+      "label": "output",
+      "controlType": "jack",
+      "direction": "output",
+      "dataType": "int",
+      "description": "Processed velocity output signal",
+      "valueConstraints": {
+        "type": "range"
+      }
+    }
+  ],
+  "template": [
+    "global ${output} = 0;",
+    "noteOn(ch, note, vel) -> ",
+    "  scaled_vel = (vel * ${scale}) / 100,",
+    "  ${output} = scaled_vel < @{min_vel} ? @{min_vel} : (scaled_vel > @{max_vel} ? @{max_vel} : scaled_vel),",
+    "  noteOn(ch, note, ${output});",
+    "noteOff(ch, note, vel) -> noteOff(ch, note, vel);"
+  ],
+  "generates": {
+    "variables": ["${output}"],
+    "rules": ["${instanceId}_velocity_scale", "${instanceId}_velocity_passthrough"]
+  }
+}

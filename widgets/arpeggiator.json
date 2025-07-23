@@ -1,0 +1,97 @@
+{
+  "id": "arpeggiator",
+  "name": "Simple Arpeggiator",
+  "version": "1.1",
+  "category": "Generator",
+  "description": "Creates simple arpeggiated patterns from the last played note",
+  "entryElements": [
+    {
+      "id": "pattern",
+      "label": "PATTERN",
+      "controlType": "dropdown",
+      "direction": "config",
+      "dataType": "string",
+      "description": "Arpeggio pattern direction",
+      "valueConstraints": {
+        "type": "options",
+        "options": [
+          {"value": "up", "label": "Up"},
+          {"value": "down", "label": "Down"},
+          {"value": "octave", "label": "Octave"}
+        ],
+        "default": "up"
+      }
+    },
+    {
+      "id": "rate",
+      "label": "RATE",
+      "controlType": "dropdown",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Arpeggio rate (MIDI clock ticks)",
+      "valueConstraints": {
+        "type": "options",
+        "options": [
+          {"value": 3, "label": "1/32"},
+          {"value": 6, "label": "1/16"},
+          {"value": 12, "label": "1/8"},
+          {"value": 24, "label": "1/4"}
+        ],
+        "default": 12
+      }
+    },
+    {
+      "id": "steps",
+      "label": "STEPS",
+      "controlType": "knob",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Number of arpeggio steps (2-8)",
+      "valueConstraints": {
+        "type": "range",
+        "min": 2,
+        "max": 8,
+        "default": 4
+      }
+    },
+    {
+      "id": "output",
+      "label": "output",
+      "controlType": "jack",
+      "direction": "output",
+      "dataType": "int",
+      "description": "Arpeggiated note output",
+      "valueConstraints": {
+        "type": "range"
+      }
+    }
+  ],
+  "template": [
+    "global ${instanceId}_base_note = 60;",
+    "global ${instanceId}_current_step = 0;",
+    "global ${instanceId}_clock_count = 0;",
+    "global ${output} = 0;",
+    "",
+    "// Capture the base note",
+    "noteOn(ch, note, vel) -> ${instanceId}_base_note = note;",
+    "",
+    "// Generate arpeggio on timing clock",
+    "timingClock() -> ",
+    "  ${instanceId}_clock_count = ${instanceId}_clock_count + 1;",
+    "",
+    "(timingClock() & ${instanceId}_clock_count % @{rate} == 0) ->",
+    "@{if pattern == 'up':",
+    "  ${output} = ${instanceId}_base_note + (${instanceId}_current_step % @{steps}),",
+    "elif pattern == 'down':",
+    "  ${output} = ${instanceId}_base_note - (${instanceId}_current_step % @{steps}),",
+    "else:",
+    "  ${output} = ${instanceId}_base_note + ((${instanceId}_current_step % @{steps}) * 12),",
+    "}",
+    "  noteOn(1, ${output}, 100),",
+    "  ${instanceId}_current_step = ${instanceId}_current_step + 1;"
+  ],
+  "generates": {
+    "variables": ["${instanceId}_base_note", "${instanceId}_current_step", "${instanceId}_clock_count", "${output}"],
+    "rules": ["${instanceId}_note_capture", "${instanceId}_arp_step"]
+  }
+}

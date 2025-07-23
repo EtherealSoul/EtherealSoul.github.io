@@ -1,0 +1,98 @@
+{
+  "id": "cc_analyzer",
+  "name": "CC Analyzer",
+  "version": "1.0",
+  "category": "Input",
+  "description": "Reads MIDI controller data and outputs scaled integer values",
+  "entryElements": [
+    {
+      "id": "cc",
+      "label": "CC#",
+      "controlType": "dropdown",
+      "direction": "config",
+      "dataType": "int",
+      "description": "MIDI CC number to monitor",
+      "valueConstraints": {
+        "type": "options",
+        "options": [
+          {"value": 1, "label": "01-ModWhl"},
+          {"value": 7, "label": "07-Volume"},
+          {"value": 10, "label": "10-Pan"},
+          {"value": 11, "label": "11-Expression"},
+          {"value": 64, "label": "64-Sustain"},
+          {"value": 71, "label": "71-Filter"},
+          {"value": 72, "label": "72-Release"},
+          {"value": 73, "label": "73-Attack"},
+          {"value": 74, "label": "74-Cutoff"}
+        ],
+        "default": 1
+      }
+    },
+    {
+      "id": "min",
+      "label": "MIN",
+      "controlType": "knob",
+      "direction": "input",
+      "dataType": "int",
+      "description": "Minimum output value (CV controllable)",
+      "valueConstraints": {
+        "type": "range",
+        "min": 0,
+        "max": 127,
+        "default": 0
+      }
+    },
+    {
+      "id": "max",
+      "label": "MAX",
+      "controlType": "knob",
+      "direction": "input",
+      "dataType": "int",
+      "description": "Maximum output value (CV controllable)",
+      "valueConstraints": {
+        "type": "range",
+        "min": 0,
+        "max": 127,
+        "default": 127
+      }
+    },
+    {
+      "id": "invert",
+      "label": "INVERT",
+      "controlType": "checkbox",
+      "direction": "config",
+      "dataType": "boolean",
+      "description": "Invert the output signal",
+      "valueConstraints": {
+        "type": "boolean",
+        "default": false
+      }
+    },
+    {
+      "id": "intensity",
+      "label": "intensity",
+      "controlType": "jack",
+      "direction": "output",
+      "dataType": "int",
+      "description": "Scaled controller intensity (0-127)",
+      "valueConstraints": {
+        "type": "range"
+      }
+    }
+  ],
+  "template": [
+    "global ${intensity} = ${min};",
+    "@{if invert:",
+    "  controlChange(ch, @{cc}, val) -> ",
+    "    inverted_val = 127 - val,",
+    "    ${intensity} = ${min} + (inverted_val * (${max} - ${min})) / 127;",
+    "else:",
+    "  controlChange(ch, @{cc}, val) -> ",
+    "    ${intensity} = ${min} + (val * (${max} - ${min})) / 127;",
+    "}"
+  ],
+  "generates": {
+    "variables": ["${intensity}"],
+    "rules": ["${instanceId}_cc_processor"]
+  }
+}

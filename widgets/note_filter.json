@@ -1,0 +1,87 @@
+{
+  "id": "note_filter",
+  "name": "Note Filter",
+  "version": "1.0",
+  "category": "Transform",
+  "description": "Filters notes by range, velocity, or other criteria",
+  "entryElements": [
+    {
+      "id": "low",
+      "label": "LOW",
+      "controlType": "knob",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Lowest note to pass (0-127)",
+      "valueConstraints": {
+        "type": "range",
+        "min": 0,
+        "max": 127,
+        "default": 60
+      }
+    },
+    {
+      "id": "high",
+      "label": "HIGH",
+      "controlType": "knob",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Highest note to pass (0-127)",
+      "valueConstraints": {
+        "type": "range",
+        "min": 0,
+        "max": 127,
+        "default": 72
+      }
+    },
+    {
+      "id": "min_vel",
+      "label": "MIN VEL",
+      "controlType": "knob",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Minimum velocity to pass",
+      "valueConstraints": {
+        "type": "range",
+        "min": 1,
+        "max": 127,
+        "default": 1
+      }
+    },
+    {
+      "id": "max_vel",
+      "label": "MAX VEL",
+      "controlType": "knob",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Maximum velocity to pass",
+      "valueConstraints": {
+        "type": "range",
+        "min": 1,
+        "max": 127,
+        "default": 127
+      }
+    },
+    {
+      "id": "output",
+      "label": "output",
+      "controlType": "jack",
+      "direction": "output",
+      "dataType": "int",
+      "description": "Notes that passed filter",
+      "valueConstraints": {
+        "type": "range"
+      }
+    }
+  ],
+  "template": [
+    "global ${output} = 0;",
+    "noteOn(ch, note, vel) & note >= @{low} & note <= @{high} & vel >= @{min_vel} & vel <= @{max_vel} -> ",
+    "  noteOn(ch, note, vel), ${output} = note;",
+    "noteOff(ch, note, vel) & note >= @{low} & note <= @{high} -> ",
+    "  noteOff(ch, note, vel);"
+  ],
+  "generates": {
+    "variables": ["${output}"],
+    "rules": ["${instanceId}_note_filter", "${instanceId}_noteoff_filter"]
+  }
+}

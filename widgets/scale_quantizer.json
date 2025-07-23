@@ -1,0 +1,110 @@
+{
+  "id": "scale_quantizer",
+  "name": "Scale Quantizer",
+  "version": "1.0",
+  "category": "Transform",
+  "description": "Quantizes notes to common musical scales",
+  "entryElements": [
+    {
+      "id": "scale",
+      "label": "SCALE",
+      "controlType": "dropdown",
+      "direction": "config",
+      "dataType": "string",
+      "description": "Musical scale type",
+      "valueConstraints": {
+        "type": "options",
+        "options": [
+          {"value": "major", "label": "Major"},
+          {"value": "minor", "label": "Minor"},
+          {"value": "pentatonic", "label": "Pentatonic"},
+          {"value": "blues", "label": "Blues"},
+          {"value": "chromatic", "label": "Chromatic"}
+        ],
+        "default": "major"
+      }
+    },
+    {
+      "id": "root",
+      "label": "ROOT",
+      "controlType": "dropdown",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Scale root note",
+      "valueConstraints": {
+        "type": "options",
+        "options": [
+          {"value": 0, "label": "C"}, {"value": 1, "label": "C#"},
+          {"value": 2, "label": "D"}, {"value": 3, "label": "D#"},
+          {"value": 4, "label": "E"}, {"value": 5, "label": "F"},
+          {"value": 6, "label": "F#"}, {"value": 7, "label": "G"},
+          {"value": 8, "label": "G#"}, {"value": 9, "label": "A"},
+          {"value": 10, "label": "A#"}, {"value": 11, "label": "B"}
+        ],
+        "default": 0
+      }
+    },
+    {
+      "id": "output",
+      "label": "output",
+      "controlType": "jack",
+      "direction": "output",
+      "dataType": "int",
+      "description": "Quantized note output",
+      "valueConstraints": {
+        "type": "range"
+      }
+    }
+  ],
+  "template": [
+    "global ${output} = 0;",
+    "@{if scale == 'major':",
+    "  // C Major scale: quantize to nearest scale tone",
+    "  noteOn(ch, note, vel) -> ",
+    "    note_class = (note - @{root}) % 12,",
+    "    quantized_class = note_class == 1 ? 0 : (note_class == 3 ? 2 : (note_class == 6 ? 5 : (note_class == 8 ? 7 : (note_class == 10 ? 9 : note_class)))),",
+    "    quantized_note = note - note_class + quantized_class + @{root},",
+    "    noteOn(ch, quantized_note, vel),",
+    "    ${output} = quantized_note;",
+    "  noteOff(ch, note, vel) ->",
+    "    note_class = (note - @{root}) % 12,",
+    "    quantized_class = note_class == 1 ? 0 : (note_class == 3 ? 2 : (note_class == 6 ? 5 : (note_class == 8 ? 7 : (note_class == 10 ? 9 : note_class)))),",
+    "    quantized_note = note - note_class + quantized_class + @{root},",
+    "    noteOff(ch, quantized_note, vel);",
+    "elif scale == 'minor':",
+    "  // Natural minor scale",
+    "  noteOn(ch, note, vel) -> ",
+    "    note_class = (note - @{root}) % 12,",
+    "    quantized_class = note_class == 1 ? 0 : (note_class == 4 ? 3 : (note_class == 6 ? 5 : (note_class == 9 ? 8 : (note_class == 11 ? 10 : note_class)))),",
+    "    quantized_note = note - note_class + quantized_class + @{root},",
+    "    noteOn(ch, quantized_note, vel),",
+    "    ${output} = quantized_note;",
+    "  noteOff(ch, note, vel) ->",
+    "    note_class = (note - @{root}) % 12,",
+    "    quantized_class = note_class == 1 ? 0 : (note_class == 4 ? 3 : (note_class == 6 ? 5 : (note_class == 9 ? 8 : (note_class == 11 ? 10 : note_class)))),",
+    "    quantized_note = note - note_class + quantized_class + @{root},",
+    "    noteOff(ch, quantized_note, vel);",
+    "elif scale == 'pentatonic':",
+    "  // Pentatonic scale",
+    "  noteOn(ch, note, vel) -> ",
+    "    note_class = (note - @{root}) % 12,",
+    "    quantized_class = note_class < 2 ? 0 : (note_class < 5 ? 2 : (note_class < 7 ? 5 : (note_class < 10 ? 7 : 9))),",
+    "    quantized_note = note - note_class + quantized_class + @{root},",
+    "    noteOn(ch, quantized_note, vel),",
+    "    ${output} = quantized_note;",
+    "  noteOff(ch, note, vel) ->",
+    "    note_class = (note - @{root}) % 12,",
+    "    quantized_class = note_class < 2 ? 0 : (note_class < 5 ? 2 : (note_class < 7 ? 5 : (note_class < 10 ? 7 : 9))),",
+    "    quantized_note = note - note_class + quantized_class + @{root},",
+    "    noteOff(ch, quantized_note, vel);",
+    "else:",
+    "  // Chromatic - pass through",
+    "  noteOn(ch, note, vel) -> noteOn(ch, note, vel), ${output} = note;",
+    "  noteOff(ch, note, vel) -> noteOff(ch, note, vel);",
+    "}"
+  ],
+  "generates": {
+    "variables": ["${output}"],
+    "rules": ["${instanceId}_quantize_processor"]
+  }
+}

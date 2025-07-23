@@ -1,0 +1,85 @@
+{
+  "id": "delay_effect",
+  "name": "Delay Effect",
+  "version": "1.0",
+  "category": "Effect",
+  "description": "Simple MIDI delay with velocity decay",
+  "entryElements": [
+    {
+      "id": "time",
+      "label": "TIME",
+      "controlType": "dropdown",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Delay time in MIDI clock ticks",
+      "valueConstraints": {
+        "type": "options",
+        "options": [
+          {"value": 6, "label": "1/16"},
+          {"value": 12, "label": "1/8"},
+          {"value": 24, "label": "1/4"},
+          {"value": 48, "label": "1/2"},
+          {"value": 96, "label": "1 Bar"}
+        ],
+        "default": 12
+      }
+    },
+    {
+      "id": "decay",
+      "label": "DECAY%",
+      "controlType": "knob",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Velocity decay percentage (10-100)",
+      "valueConstraints": {
+        "type": "range",
+        "min": 10,
+        "max": 100,
+        "default": 80
+      }
+    },
+    {
+      "id": "mix",
+      "label": "MIX%",
+      "controlType": "knob",
+      "direction": "config",
+      "dataType": "int",
+      "description": "Dry/wet mix percentage (0=dry, 100=wet)",
+      "valueConstraints": {
+        "type": "range",
+        "min": 0,
+        "max": 100,
+        "default": 50
+      }
+    },
+    {
+      "id": "output",
+      "label": "output",
+      "controlType": "jack",
+      "direction": "output",
+      "dataType": "int",
+      "description": "Delayed signal output",
+      "valueConstraints": {
+        "type": "range"
+      }
+    }
+  ],
+  "template": [
+    "global ${output} = 0;",
+    "noteOn(ch, note, vel) -> ",
+    "  dry_vel = (vel * (100 - @{mix})) / 100,",
+    "  wet_vel = (vel * @{mix} * @{decay}) / 10000,",
+    "  noteOn(ch, note, dry_vel),",
+    "  delay(@{time}),",
+    "  noteOn(ch, note, wet_vel),",
+    "  ${output} = wet_vel;",
+    "noteOff(ch, note, vel) -> ",
+    "  noteOff(ch, note, vel),",
+    "  delay(@{time}),",
+    "  noteOff(ch, note, vel);"
+  ],
+  "generates": {
+    "variables": ["${output}"],
+    "rules": ["${instanceId}_delay_processor"]
+  }
+}
