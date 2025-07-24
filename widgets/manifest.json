@@ -2,7 +2,6 @@
   "version": "1.0.0",
   "description": "Built-in MIDI Widget Definitions",
   "widgets": [
-    "simple_test.json",
     "velocity_scaler.json",
     "cc_analyzer.json",
     "channel_router.json",
