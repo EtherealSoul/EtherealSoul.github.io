@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MidiLoom Support</title><style>
+  :root { --bg:#ffffff; --fg:#0f172a; --muted:#64748b; --line:#e2e8f0; --link:#2563eb; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0f172a; --fg:#f1f5f9; --muted:#94a3b8; --line:#334155; --link:#60a5fa; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font: 17px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 20px 64px; }
+  header { display:flex; align-items:center; gap:16px; margin-bottom: 8px; }
+  header img { width:72px; height:72px; border-radius:16px; }
+  h1 { font-size: 2rem; margin: 0; } h2 { margin-top: 2rem; font-size: 1.25rem; }
+  p.tag { color: var(--muted); margin: 0; }
+  a { color: var(--link); } nav a { margin-right: 16px; }
+  ol, ul { padding-left: 1.4em; } li { margin: 0.3em 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
+  footer { color: var(--muted); font-size: 0.9rem; }
+</style></head>
+<body><main>
+<header><img src="icon.png" alt="MidiLoom icon"><div><h1>MidiLoom Support</h1><p class="tag">Visual MIDI routing and processing for iPad</p></div></header>
+<nav><a href="index.html">Support</a><a href="privacy.html">Privacy Policy</a><a href="../">EtherealSoul</a></nav><hr>
+<p>MidiLoom is a visual MIDI processor for iPad. You build a graph of nodes on a canvas to route, filter, transform and generate MIDI between your USB and Bluetooth devices, other apps and its built-in sounds, in real time.</p>
+<h2>Getting started</h2>
+<ol>
+<li>Open the menu and choose an example graph. Controls Playground, Drum Beat and Play a MIDI File work with no hardware at all, using the on-screen controls and the built-in Synth.</li>
+<li>Press play. If a MIDI Input or MIDI Output node has no device chosen yet, MidiLoom asks for one.</li>
+<li>Tap a node to change its settings; drag from a port to another node to connect them. Every node has its own page in the built-in Help.</li>
+<li>Save your graph from the menu. Recently opened graphs are one tap away in the System panel.</li>
+</ol>
+<h2>MIDI devices</h2>
+<p>Class-compliant USB MIDI devices appear as soon as they are plugged in. Bluetooth MIDI devices are paired from the device manager with Connect Bluetooth MIDI. MidiLoom can also send to and receive from other MIDI apps through its virtual ports.</p>
+<h2>Files</h2>
+<p>MIDI files and recordings live in MidiLoom's folder in the Files app (On My iPad › MidiLoom). Copy a .mid file there to play it with a MIDI File Player node; takes from Record nodes are saved under recordings.</p>
+<h2>Contact</h2>
+<p>Email <a href="mailto:smythe.jared@gmail.com">smythe.jared@gmail.com</a> with the iPad model, iPadOS version, and the MIDI devices you use. If a graph misbehaves, attaching it helps.</p>
+<hr><footer>MidiLoom for iPad by Jared Smythe (EtherealSoul).</footer>
+</main></body></html>
